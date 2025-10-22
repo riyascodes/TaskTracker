@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Task Tracker</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Task Tracker</h1>
+
+        <!-- Task Form -->
+        <form id="task-form" method="POST" action="{% url 'add_task' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Task</button>
+        </form>
+
+        <!-- Task List -->
+        <ul class="task-list">
+            {% for task in tasks %}
+            <li class="{% if task.is_completed %}completed{% endif %}">
+                <span>{{ task.title }}</span>
+                <div class="actions">
+                    <a href="{% url 'toggle_task' task.id %}" title="Mark as Done">
+                        <i class="fa-solid fa-check"></i>
+                    </a>
+                    <a href="{% url 'update_task' task.id %}" title="Edit Task">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <a href="{% url 'delete_task' task.id %}" title="Delete Task">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </div>
+            </li>
+            {% empty %}
+            <li class="no-tasks">No tasks available. Add one!</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Optional JS for fade-out delete animation -->
+    <script>
+        document.querySelectorAll('.actions a[href*="delete_task"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const li = this.closest('li');
+                li.style.transition = 'opacity 0.4s, transform 0.4s';
+                li.style.opacity = 0;
+                li.style.transform = 'translateX(100px)';
+                setTimeout(() => { window.location.href = this.href; }, 400);
+            });
+        });
+    </script>
+</body>
+</html>
