@@ -76,13 +76,15 @@ WSGI_APPLICATION = 'StudTaskTracker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'student_tasks_db',
+        'NAME': 'student_tasks',
         'USER': 'root',
         'PASSWORD': 'riyas2201',
         'HOST': 'localhost',
         'PORT': '3306',
     }
 }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

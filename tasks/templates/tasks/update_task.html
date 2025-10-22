@@ -1,0 +1,30 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>Edit Task</h1>
+
+    <form action="{% url 'update_task' task.pk %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="title" value="{{ task.title }}" required>
+        <input type="text" name="description" value="{{ task.description }}">
+        <input type="date" name="due_date" value="{{ task.due_date|date:'Y-m-d' }}" required>
+        <select name="priority_level">
+            <option value="Low" {% if task.priority_level == 'Low' %}selected{% endif %}>Low</option>
+            <option value="Medium" {% if task.priority_level == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="High" {% if task.priority_level == 'High' %}selected{% endif %}>High</option>
+        </select>
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</div>
+</body>
+</html>

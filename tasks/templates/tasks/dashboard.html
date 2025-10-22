@@ -4,57 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Task Tracker</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+    <script src="{% static 'tasks/scripts.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>Student Task Tracker</h1>
 
-        <!-- Task Form -->
-        <form id="task-form" method="POST" action="{% url 'add_task' %}">
+        <!-- Add Task Form -->
+        <form id="taskForm" action="{% url 'add_task' %}" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <input type="text" name="title" placeholder="Task Title" required>
+            <input type="text" name="description" placeholder="Description">
+            <input type="date" name="due_date" required>
+            <select name="priority_level">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+            </select>
             <button type="submit">Add Task</button>
         </form>
+
+        <!-- Search & Sort -->
+        <div class="search-sort">
+            <form method="get" action="">
+                <input type="text" name="search" placeholder="Search tasks..." value="{{ search_query }}">
+                <button type="submit">Search</button>
+            </form>
+            <form method="get" action="">
+                <label for="sort">Sort by:</label>
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="due_date">Due Date</option>
+                    <option value="priority">Priority</option>
+                </select>
+            </form>
+        </div>
 
         <!-- Task List -->
         <ul class="task-list">
             {% for task in tasks %}
-            <li class="{% if task.is_completed %}completed{% endif %}">
-                <span>{{ task.title }}</span>
+            <li class="task {% if task.is_completed %}completed{% endif %}">
+                <span class="title">{{ task.title }}</span>
+                <span class="description">{{ task.description }}</span>
+                <span class="due-date">{{ task.due_date }}</span>
+                <span class="priority {{ task.priority_level|lower }}">{{ task.priority_level }}</span>
+
                 <div class="actions">
-                    <a href="{% url 'toggle_task' task.id %}" title="Mark as Done">
-                        <i class="fa-solid fa-check"></i>
-                    </a>
-                    <a href="{% url 'update_task' task.id %}" title="Edit Task">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <a href="{% url 'delete_task' task.id %}" title="Delete Task">
-                        <i class="fa-solid fa-trash"></i>
-                    </a>
+                    <a href="{% url 'toggle_complete' task.pk %}" class="action-btn complete"><i class="fa-solid fa-check"></i></a>
+                    <a href="{% url 'update_task' task.pk %}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
+                    <a href="{% url 'delete_task' task.pk %}" class="action-btn delete"><i class="fa-solid fa-trash"></i></a>
                 </div>
             </li>
             {% empty %}
-            <li class="no-tasks">No tasks available. Add one!</li>
+            <li>No tasks found.</li>
             {% endfor %}
         </ul>
     </div>
-
-    <!-- Optional JS for fade-out delete animation -->
-    <script>
-        document.querySelectorAll('.actions a[href*="delete_task"]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const li = this.closest('li');
-                li.style.transition = 'opacity 0.4s, transform 0.4s';
-                li.style.opacity = 0;
-                li.style.transform = 'translateX(100px)';
-                setTimeout(() => { window.location.href = this.href; }, 400);
-            });
-        });
-    </script>
 </body>
 </html>
