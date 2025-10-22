@@ -1,3 +1,4 @@
+# tasks/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Task
 from django.db.models import Q
@@ -31,12 +32,15 @@ def add_task(request):
 def update_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
+        # Save updates
         task.title = request.POST['title']
         task.description = request.POST.get('description', '')
         task.due_date = request.POST['due_date']
         task.priority_level = request.POST['priority_level']
         task.save()
-    return redirect('dashboard')
+        return redirect('dashboard')
+    # GET request: show edit form
+    return render(request, 'tasks/update_task.html', {'task': task})
 
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
